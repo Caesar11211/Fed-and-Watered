@@ -1,7 +1,7 @@
 /* Fed & Watered — service worker
    Cache name is date-stamped, so this deploy replaces every older cache. */
 
-const CACHE = "fed-and-watered-2026-08-12b";
+const CACHE = "fed-and-watered-2026-08-25a";
 
 // Best-effort app shell. Anything that 404s is skipped rather than
 // failing the whole install, so unknown icon names can't break it.
@@ -74,16 +74,19 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     (async () => {
       const hit = await caches.match(req);
-      if (hit) return hit;
+      if (hit) {
+        fetch(req)
+          .then((res) => caches.open(CACHE).then((c) => c.put(req, res)))
+          .catch(() => {});
+        return hit;
+      }
       try {
-        const fresh = await fetch(req);
-        if (fresh && fresh.status === 200 && fresh.type !== "opaque") {
-          const cache = await caches.open(CACHE);
-          cache.put(req, fresh.clone());
-        }
-        return fresh;
+        const res = await fetch(req);
+        const cache = await caches.open(CACHE);
+        cache.put(req, res.clone());
+        return res;
       } catch {
-        return hit || Response.error();
+        return new Response("", { status: 504 });
       }
     })()
   );
