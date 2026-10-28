@@ -1,7 +1,7 @@
 /* Fed & Watered — service worker
    Cache name is date-stamped, so this deploy replaces every older cache. */
 
-const CACHE = "fed-and-watered-2026-08-25a";
+const CACHE = "fed-and-watered-2026-10-28a";
 
 // Best-effort app shell. Anything that 404s is skipped rather than
 // failing the whole install, so unknown icon names can't break it.
